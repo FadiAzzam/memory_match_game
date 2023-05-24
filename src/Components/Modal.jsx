@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 
 export default function Modal({ won, func, children }) {
   const [showModal, setShowModal] = React.useState(won);
-  console.log(won);
   return (
     <>
       {won ? (

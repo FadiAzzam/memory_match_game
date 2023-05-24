@@ -18,10 +18,19 @@ module.exports = {
           "0%, 100%": { transform: "rotate(-3deg)" },
           "50%": { transform: "rotate(3deg)" },
         },
+        rotate: {
+          "100%": {
+            transform: "rotate(360deg)",
+          },
+        },
       },
       animation: {
         "spin-slow": "spin 3s linear infinite",
         wiggle: "wiggle 1s ease-in-out infinite",
+        outTop: "rotate 20s linear infinite",
+        inTop: "rotate 10s linear infinite",
+        outBottom: "rotate 25s linear infinite",
+        inBottom: "rotate 15s linear infinite",
       },
       fontFamily: {
         VT323: ["VT323", "monospace"],
