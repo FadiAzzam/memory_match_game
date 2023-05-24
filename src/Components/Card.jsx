@@ -11,8 +11,8 @@ const Card = ({ item, select, setFunc, timeLeft }) => {
   return (
     <div
       className={`${
-        item.found ? "bg-green-400" : "bg-red-400"
-      }  text-white p-3 rounded-sm shadow-sm hover:animate-wiggle cursor-pointer w-28 h-28 flex justify-center items-center`}
+        item.found ? "bg-green-400" : "bg-blue-400"
+      }  text-white p-3 rounded-sm shadow-sm hover:animate-wiggle cursor-pointer w-20 h-20 md:w-28 md:h-28 flex justify-center items-center`}
       onClick={() => {
         if (item.id === select[0]?.id) {
           return;
