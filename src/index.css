@@ -13,3 +13,37 @@ body {
   -moz-osx-font-smoothing: grayscale;
   @apply font-VT323 dark:bg-gray-900
 }
+
+
+/* Mobile View */
+.mainContainer {
+	display: grid;
+	grid-template-areas: "mesg mesg " "main main" "sidebar sidebar" ;
+	grid-template-columns: auto 1fr;
+	grid-template-rows: auto 1fr auto;
+	height: 100%;
+}
+
+@media (min-width: 768px) {
+	/* Tablet and above View */
+
+	.mainContainer {
+		display: grid;
+		grid-template-areas: "mesg mesg " "sidebar main" "sidebar main" "sidebar main";
+		grid-template-columns: auto 1fr;
+		grid-template-rows: auto 1fr 1fr;
+		height: 100%;
+	}
+}
+
+
+.grid-area-sidebar {
+	grid-area: sidebar;
+	overflow-y: auto;
+
+}
+
+.grid-area-main {
+	grid-area: main;
+	overflow-y: auto;
+}

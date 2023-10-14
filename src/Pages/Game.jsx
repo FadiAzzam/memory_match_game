@@ -4,17 +4,16 @@ import Modal from "../Components/Modal";
 import { projectFirestore } from "../firebase/config";
 import useFireStore from "../hooks/useFireStore";
 
+import Sidebar from "../sections/Sidebar";
+
 const Game = ({ initialData, playerName }) => {
   const { docs } = useFireStore("results");
-
   const [data, setData] = useState(initialData);
   const [select, setSelect] = useState([]);
   const [timeLeft, setTimeLeft] = useState(0);
   const [won, setWon] = useState(false);
   const [score, setScore] = useState(0);
-
   const [startTime, setStartTime] = useState(null);
-
   const [compareState, setCompareState] = useState([]);
 
   const hasUserWon = () => {
@@ -76,62 +75,69 @@ const Game = ({ initialData, playerName }) => {
     }
   };
 
+  const highestScoreObject = docs.reduce((acc, obj) => {
+    if (!acc || obj.score < acc.score) {
+      return obj;
+    }
+    return acc;
+  }, null);
+
   const reset = () => {
     if (playerName !== "") {
       const collectionRef = projectFirestore.collection("results");
       collectionRef.add({ username: playerName, score: score });
-      console.log(collectionRef);
+      console.log(highestScoreObject);
     }
     setData(initialData);
     setWon(false);
     setScore(0);
     setStartTime(null);
   };
+
   return (
-    <div className="h-screen relative z-10 flex flex-col justify-center items-center text-center backdrop-blur-xl drop-shadow-2xl bg-gray-700/20">
-      <h1 className="text-3xl text-gray-300 py-3">Memory Game</h1>
-      <h1 className="text-3xl text-gray-300 py-3">Player: {playerName}</h1>
-
-      <div className="grid grid-cols-3 md:grid-cols-4 gap-3 items-stretch">
-        {data.map((item) => {
-          return (
-            <React.Fragment key={item.id}>
-              <Card
-                item={item}
-                select={select}
-                setFunc={setSelect}
-                timeLeft={timeLeft}
-              />
-            </React.Fragment>
-          );
-        })}
+    <div className="mainContainer">
+      <div className="grid-area-sidebar bg-gray-800 text-gray-100 p-3">
+        <Sidebar docs={docs} />
       </div>
+      <div className="grid-area-main flex justify-center items-center">
+        <div className="">
+          <h1 className="text-3xl text-gray-300 py-3">Memory Game</h1>
+          <h1 className="text-3xl text-gray-300 py-3">Player: {playerName}</h1>
+          <h1 className="text-3xl text-gray-300 py-3">
+            Best score: {playerName}
+          </h1>
 
-      <Modal won={won} func={reset}>
-        <div className="p-6 flex gap-3 py-3 justify-center flex-col md:flex-row">
-          <div className="grow border-4 p-3 border-sky-900 text-sky-900 bg-sky-400 shadow-xl transition-all delay-150 ">
-            <h1 className="text-xl md:text-3xl  uppercase animate-wiggle ">
-              You won in {score} seconds!
-            </h1>
+          <div className="grid grid-cols-3 md:grid-cols-4 gap-3 items-stretch">
+            {data.map((item) => {
+              return (
+                <React.Fragment key={item.id}>
+                  <Card
+                    item={item}
+                    select={select}
+                    setFunc={setSelect}
+                    timeLeft={timeLeft}
+                  />
+                </React.Fragment>
+              );
+            })}
           </div>
-          <button
-            className="text-xl md:text-2xl border-4 border-sky-900 text-sky-900 p-3 hover:bg-sky-400 transition-all delay-150"
-            onClick={() => reset()}
-          >
-            Restart
-          </button>
-        </div>
-      </Modal>
 
-      <h1>Players: </h1>
-      <div className="flex flex-col">
-        {docs.map((user) => {
-          return (
-            <h1>
-              {user.username}, score: {user.score}
-            </h1>
-          );
-        })}
+          <Modal won={won} func={reset}>
+            <div className="p-6 flex gap-3 py-3 justify-center flex-col md:flex-row">
+              <div className="grow border-4 p-3 border-sky-900 text-sky-900 bg-sky-400 shadow-xl transition-all delay-150 ">
+                <h1 className="text-xl md:text-3xl  uppercase animate-wiggle ">
+                  You won in {score} seconds!
+                </h1>
+              </div>
+              <button
+                className="text-xl md:text-2xl border-4 border-sky-900 text-sky-900 p-3 hover:bg-sky-400 transition-all delay-150"
+                onClick={() => reset()}
+              >
+                Restart
+              </button>
+            </div>
+          </Modal>
+        </div>
       </div>
     </div>
   );

@@ -83,7 +83,7 @@ function App() {
   const [playerName, setPlayerName] = useState("");
 
   return (
-    <div className="">
+    <div className="h-screen">
       <HashRouter>
         <Routes>
           <Route
@@ -97,12 +97,12 @@ function App() {
           />
           <Route
             path="/game"
-            element={<Game initialData={initialData} playerName={"Alex"} />}
+            element={<Game initialData={initialData} playerName={playerName} />}
           />
         </Routes>
       </HashRouter>
 
-      <BgSvg />
+      {/* <BgSvg /> */}
     </div>
   );
 }
