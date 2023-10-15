@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Route, Routes, HashRouter } from "react-router-dom";
 
-import BgSvg from "./Components/BgSvg";
+import Header from "./layout/Header";
 import Game from "./Pages/Game";
 import LandingPage from "./Pages/LandingPage";
 
@@ -79,30 +79,17 @@ const initialData = [
     found: false,
   },
 ];
-function App() {
-  const [playerName, setPlayerName] = useState("");
 
+function App() {
   return (
     <div className="h-screen">
+      <Header />
       <HashRouter>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <LandingPage
-                playerName={playerName}
-                setPlayerName={setPlayerName}
-              />
-            }
-          />
-          <Route
-            path="/game"
-            element={<Game initialData={initialData} playerName={playerName} />}
-          />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/game" element={<Game initialData={initialData} />} />
         </Routes>
       </HashRouter>
-
-      {/* <BgSvg /> */}
     </div>
   );
 }

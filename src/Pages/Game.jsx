@@ -1,13 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AppContext } from "../context/UserContext";
+
 import Card from "../Components/Card";
 import Modal from "../Components/Modal";
 import { projectFirestore } from "../firebase/config";
-import useFireStore from "../hooks/useFireStore";
 
 import Sidebar from "../sections/Sidebar";
+import HighestScroeUser from "../Components/HighestScoreUser";
 
-const Game = ({ initialData, playerName }) => {
-  const { docs } = useFireStore("results");
+import { addResultToFirestore } from "../utils/helpers";
+
+const Game = ({ initialData }) => {
+  const context = useContext(AppContext);
+
   const [data, setData] = useState(initialData);
   const [select, setSelect] = useState([]);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -75,18 +80,9 @@ const Game = ({ initialData, playerName }) => {
     }
   };
 
-  const highestScoreObject = docs.reduce((acc, obj) => {
-    if (!acc || obj.score < acc.score) {
-      return obj;
-    }
-    return acc;
-  }, null);
-
   const reset = () => {
-    if (playerName !== "") {
-      const collectionRef = projectFirestore.collection("results");
-      collectionRef.add({ username: playerName, score: score });
-      console.log(highestScoreObject);
+    if (context.store.currentUser !== "") {
+      addResultToFirestore(context.store.currentUser, score);
     }
     setData(initialData);
     setWon(false);
@@ -96,17 +92,11 @@ const Game = ({ initialData, playerName }) => {
 
   return (
     <div className="mainContainer">
-      <div className="grid-area-sidebar bg-gray-800 text-gray-100 p-3">
-        <Sidebar docs={docs} />
+      <div className="grid-area-sidebar  text-gray-100 p-3">
+        <Sidebar />
       </div>
       <div className="grid-area-main flex justify-center items-center">
-        <div className="">
-          <h1 className="text-3xl text-gray-300 py-3">Memory Game</h1>
-          <h1 className="text-3xl text-gray-300 py-3">Player: {playerName}</h1>
-          <h1 className="text-3xl text-gray-300 py-3">
-            Best score: {playerName}
-          </h1>
-
+        <div>
           <div className="grid grid-cols-3 md:grid-cols-4 gap-3 items-stretch">
             {data.map((item) => {
               return (
@@ -121,8 +111,9 @@ const Game = ({ initialData, playerName }) => {
               );
             })}
           </div>
+          <HighestScroeUser />
 
-          <Modal won={won} func={reset}>
+          <Modal won={won}>
             <div className="p-6 flex gap-3 py-3 justify-center flex-col md:flex-row">
               <div className="grow border-4 p-3 border-sky-900 text-sky-900 bg-sky-400 shadow-xl transition-all delay-150 ">
                 <h1 className="text-xl md:text-3xl  uppercase animate-wiggle ">

@@ -1,28 +1,60 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { checkUserInFirestore } from "../utils/helpers";
+import { useNavigate } from "react-router-dom";
 
-const LandingPage = ({ setPlayerName, playerName }) => {
+import { AppContext } from "../context/UserContext";
+
+const LandingPage = () => {
+  const context = useContext(AppContext);
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!context.store.currentUser) {
+      toast.error("Please enter your name", {
+        duration: 1000,
+        position: "bottom-center",
+      });
+      return;
+    }
+
+    try {
+      let isUserExists = await checkUserInFirestore(context.store.currentUser);
+
+      if (!isUserExists) {
+        return;
+      }
+
+      navigate("/game");
+    } catch (error) {
+      console.error("Error handling form submission:", error);
+    }
+  };
+
   return (
-    <div className="z-10 backdrop-blur-xl drop-shadow-2xl bg-gray-700/20 h-screen relative flex justify-center items-center flex-col">
-      <div className="flex flex-col gap-3 text-3xl text-center">
-        <h1 className=" text-gray-300 py-3">Memory Game</h1>
-
-        <input
-          className="p-3"
-          type="text"
-          placeholder="Enter your name"
-          value={playerName}
-          onChange={(e) => setPlayerName(e.target.value)}
-        />
-        {playerName ? (
-          <Link to="/game" className="uppercase px-1 bg-green-400 p-3 ">
-            start
-          </Link>
-        ) : (
-          <span className="uppercase px-1 bg-gray-400 p-3 transition-all delay-100">
-            start
-          </span>
-        )}
+    <div className="h-screen relative flex justify-center items-center flex-col">
+      <div className="">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-3 text-3xl text-center"
+        >
+          <input
+            className="p-3 text-black"
+            type="text"
+            placeholder="Enter your name"
+            value={context.store.currentUser}
+            onChange={(e) => context.actions.addCurrentUser(e.target.value)}
+          />
+          <input
+            type="submit"
+            value="start"
+            className="uppercase px-1 bg-green-400 p-3 "
+          />
+          <Toaster />
+        </form>
       </div>
     </div>
   );

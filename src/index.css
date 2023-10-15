@@ -11,8 +11,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply font-VT323 dark:bg-gray-900
+  @apply font-VT323 dark:bg-gray-900 dark:text-zinc-50
 }
+
+
 
 
 /* Mobile View */
