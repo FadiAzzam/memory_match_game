@@ -34,6 +34,8 @@ module.exports = {
       },
       fontFamily: {
         VT323: ["VT323", "monospace"],
+        P: ['"Press Start 2P"', "monospace"],
+        Audiowide: ["Audiowide", "monospace"],
       },
     },
   },

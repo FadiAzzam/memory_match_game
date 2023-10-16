@@ -3,12 +3,12 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 
-import { ContextWrapper } from "./context/UserContext";
+import { ContextWrapper, AppProvider } from "./context/UserContext";
 
 const AppContext = () => (
-  <ContextWrapper>
+  <AppProvider>
     <App />
-  </ContextWrapper>
+  </AppProvider>
 );
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<AppContext />);

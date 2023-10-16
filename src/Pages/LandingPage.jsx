@@ -39,14 +39,19 @@ const LandingPage = () => {
       <div className="">
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-3 text-3xl text-center"
+          className="flex flex-col gap-3 text-xl text-center"
         >
           <input
             className="p-3 text-black"
             type="text"
             placeholder="Enter your name"
             value={context.store.currentUser}
-            onChange={(e) => context.actions.addCurrentUser(e.target.value)}
+            onChange={(e) =>
+              context.dispatch({
+                type: "ADD_CURRENT_USER",
+                payload: e.target.value,
+              })
+            }
             required
             minLength="3"
             maxLength="20"
@@ -54,7 +59,7 @@ const LandingPage = () => {
           <input
             type="submit"
             value="start"
-            className="uppercase px-1 bg-green-400 p-3 "
+            className="uppercase px-1 bg-rose-600 p-3 text-black cursor-pointer hover:bg-rose-500"
           />
           <Toaster />
         </form>

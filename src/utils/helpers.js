@@ -128,16 +128,16 @@ export const generateGameData = (level) => {
     const id = uuid();
     cards.push({
       id,
-      display: "?",
-      content: emojis[emojiIndex],
-      found: false,
+      value: emojis[emojiIndex],
+      flipped: false,
+      matched: false,
     });
     // Assign a different ID for the second set of cards
     secondSetOfCards.push({
       id: uuid(),
-      display: "?",
-      content: emojis[emojiIndex],
-      found: false,
+      value: emojis[emojiIndex],
+      flipped: false,
+      matched: false,
     });
   }
 

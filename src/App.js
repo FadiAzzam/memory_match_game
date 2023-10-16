@@ -13,10 +13,10 @@ function App() {
         <Route
           path="/game"
           element={
-            <>
+            <div className="mainContainer">
               <Header />
               <Game />
-            </>
+            </div>
           }
         />
         <Route path="*" element={<NoMatch />} />
