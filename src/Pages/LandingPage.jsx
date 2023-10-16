@@ -24,7 +24,7 @@ const LandingPage = () => {
     try {
       let isUserExists = await checkUserInFirestore(context.store.currentUser);
 
-      if (!isUserExists) {
+      if (isUserExists) {
         return;
       }
 
@@ -47,6 +47,9 @@ const LandingPage = () => {
             placeholder="Enter your name"
             value={context.store.currentUser}
             onChange={(e) => context.actions.addCurrentUser(e.target.value)}
+            required
+            minLength="3"
+            maxLength="20"
           />
           <input
             type="submit"

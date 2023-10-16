@@ -8,8 +8,6 @@ export const ContextWrapper = (props) => {
 
   const [store, setStore] = useState({
     currentUser: "",
-    firebaseUsers: firebaseUsers,
-    users: [],
   });
 
   useEffect(() => {

@@ -1,14 +1,14 @@
-import React, { useContext } from "react";
-import { AppContext } from "../context/UserContext";
+import React from "react";
+import UseFireStore from "../hooks/UseFireStore";
 
 const Sidebar = () => {
-  const context = useContext(AppContext);
+  const { docs } = UseFireStore("results"); // Users from Firebase
 
   return (
     <>
-      <h1>Players: </h1>
+      <h1 className="text-2xl text-center py-3 text-blue-400">Players</h1>
       <div className="flex flex-col gap-1">
-        {context.store.firebaseUsers.map((user, i) => {
+        {docs.map((user, i) => {
           return (
             <p
               key={user.id}

@@ -1,19 +1,24 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../context/UserContext";
+import toast, { Toaster } from "react-hot-toast";
 
-import Card from "../Components/Card";
+import Cards from "../Components/Cards";
 import Modal from "../Components/Modal";
-import { projectFirestore } from "../firebase/config";
 
 import Sidebar from "../sections/Sidebar";
 import HighestScroeUser from "../Components/HighestScoreUser";
 
-import { addResultToFirestore } from "../utils/helpers";
+import { handleGameExit } from "../utils/helpers";
+import { useNavigate } from "react-router-dom";
 
-const Game = ({ initialData }) => {
+import { generateGameData, shuffleArray } from "../utils/helpers";
+
+const Game = () => {
   const context = useContext(AppContext);
+  const navigate = useNavigate();
 
-  const [data, setData] = useState(initialData);
+  const [level, setLevel] = useState(1);
+  const [data, setData] = useState(shuffleArray(generateGameData(level)));
   const [select, setSelect] = useState([]);
   const [timeLeft, setTimeLeft] = useState(0);
   const [won, setWon] = useState(false);
@@ -21,13 +26,23 @@ const Game = ({ initialData }) => {
   const [startTime, setStartTime] = useState(null);
   const [compareState, setCompareState] = useState([]);
 
-  const hasUserWon = () => {
+  // Check for user presence when the component mounts
+  useEffect(() => {
+    if (context.store.currentUser === "") {
+      // If there's no username, navigate back to the start page
+      navigate("/");
+    }
+  }, [context.store.currentUser, navigate]);
+
+  // checking if all cards are found
+  const areAllCardsFound = () => {
     return data.every((element) => element.found);
   };
 
   useEffect(() => {
-    const userWon = hasUserWon();
-    setWon(userWon);
+    const userWon = areAllCardsFound();
+    setLevel((prevLevel) => prevLevel + 1);
+    //setWon(userWon);
   }, [data]);
 
   useEffect(() => {
@@ -38,7 +53,7 @@ const Game = ({ initialData }) => {
       const elapsedTime = Math.floor((endTime - startTime) / 1000); // Calculate time in seconds
       setScore(elapsedTime);
     }
-  }, [startTime, won]);
+  }, [startTime, won, level]);
 
   useEffect(() => {
     if (!timeLeft) return;
@@ -80,11 +95,9 @@ const Game = ({ initialData }) => {
     }
   };
 
-  const reset = () => {
-    if (context.store.currentUser !== "") {
-      addResultToFirestore(context.store.currentUser, score);
-    }
-    setData(initialData);
+  const reset = async () => {
+    handleGameExit(context.store.currentUser, score);
+    setData(shuffleArray(generateGameData(level)));
     setWon(false);
     setScore(0);
     setStartTime(null);
@@ -97,37 +110,17 @@ const Game = ({ initialData }) => {
       </div>
       <div className="grid-area-main flex justify-center items-center">
         <div>
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-3 items-stretch">
-            {data.map((item) => {
-              return (
-                <React.Fragment key={item.id}>
-                  <Card
-                    item={item}
-                    select={select}
-                    setFunc={setSelect}
-                    timeLeft={timeLeft}
-                  />
-                </React.Fragment>
-              );
-            })}
-          </div>
+          {score}
+          <Cards
+            data={data}
+            select={select}
+            setSelect={setSelect}
+            timeLeft={timeLeft}
+          />
           <HighestScroeUser />
 
-          <Modal won={won}>
-            <div className="p-6 flex gap-3 py-3 justify-center flex-col md:flex-row">
-              <div className="grow border-4 p-3 border-sky-900 text-sky-900 bg-sky-400 shadow-xl transition-all delay-150 ">
-                <h1 className="text-xl md:text-3xl  uppercase animate-wiggle ">
-                  You won in {score} seconds!
-                </h1>
-              </div>
-              <button
-                className="text-xl md:text-2xl border-4 border-sky-900 text-sky-900 p-3 hover:bg-sky-400 transition-all delay-150"
-                onClick={() => reset()}
-              >
-                Restart
-              </button>
-            </div>
-          </Modal>
+          <Modal won={won} score={score} reset={reset} />
+          <Toaster />
         </div>
       </div>
     </div>

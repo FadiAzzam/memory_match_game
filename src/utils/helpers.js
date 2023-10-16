@@ -51,17 +51,96 @@ export const checkUserInFirestore = async (username) => {
       .where("username", "==", username)
       .get();
 
-    if (existingUser.docs.length > 0) {
+    if (existingUser.docs.length === 1) {
       toast.error("User already exists in the database", {
         duration: 2000,
         position: "bottom-center",
       });
-      return false;
+      return true;
     }
 
-    return true;
+    return false;
   } catch (error) {
     console.error("Error checking user in Firestore:", error);
     return false;
   }
+};
+
+export const updateScoreInFirestore = async (username, newScore) => {
+  const collectionRef = projectFirestore.collection("results");
+
+  // Get the document reference for the user
+  const userDoc = await collectionRef.where("username", "==", username).get();
+
+  if (userDoc.docs.length > 0) {
+    const docId = userDoc.docs[0].id;
+
+    // Update the user's score
+    await collectionRef.doc(docId).update({
+      score: newScore,
+    });
+  }
+};
+
+export const handleGameExit = async (username, score) => {
+  if (username !== "") {
+    try {
+      let isUserExists = await checkUserInFirestore(username);
+      if (isUserExists) {
+        // If the user exists, update their score
+        await updateScoreInFirestore(username, score);
+      } else {
+        // If the user doesn't exist, add a new entry
+        await addResultToFirestore(username, score);
+      }
+    } catch (error) {
+      console.error("Error handling form submission:", error);
+    }
+  }
+};
+
+export const shuffleArray = (array) => {
+  let currentIndex = array.length,
+    randomIndex;
+
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // Swap the elements at currentIndex and randomIndex
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
+};
+
+export const generateGameData = (level) => {
+  const cardsPerLevel = level * 2; // Adjust based on your design
+  const emojis = ["🍎", "🍌", "🍓", "🍕", "🍔", "🍟", "🍦", "🍩", "🍰", "🍫"];
+  const cards = [];
+  const secondSetOfCards = [];
+
+  for (let i = 1; i <= cardsPerLevel; i++) {
+    const emojiIndex = i % emojis.length;
+    const id = uuid();
+    cards.push({
+      id,
+      display: "?",
+      content: emojis[emojiIndex],
+      found: false,
+    });
+    // Assign a different ID for the second set of cards
+    secondSetOfCards.push({
+      id: uuid(),
+      display: "?",
+      content: emojis[emojiIndex],
+      found: false,
+    });
+  }
+
+  // Concatenate both sets of cards to create pairs
+  return [...cards, ...secondSetOfCards];
 };

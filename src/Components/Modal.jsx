@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-
-export default function Modal({ won, func, children }) {
+export default function Modal({ won, score, reset }) {
   return (
     <>
       {won ? (
@@ -13,13 +12,28 @@ export default function Modal({ won, func, children }) {
                   Your Score
                 </h3>
                 <Link
+                  onClick={() => {
+                    reset();
+                  }}
                   to="/"
                   className="text-red-500 background-transparent font-bold uppercase text-sm outline-none focus:outline-none ease-linear transition-all duration-150"
                 >
                   Close
                 </Link>
               </div>
-              {children}
+              <div className="p-6 flex gap-3 py-3 justify-center flex-col md:flex-row">
+                <div className="grow border-4 p-3 border-sky-900 text-sky-900 bg-sky-400 shadow-xl transition-all delay-150 ">
+                  <h1 className="text-xl md:text-3xl  uppercase animate-wiggle ">
+                    You won in {score} seconds!
+                  </h1>
+                </div>
+                <button
+                  className="text-xl md:text-2xl border-4 border-sky-900 text-sky-900 p-3 hover:bg-sky-400 transition-all delay-150"
+                  onClick={() => reset()}
+                >
+                  Restart
+                </button>
+              </div>
             </div>
           </div>
         </>

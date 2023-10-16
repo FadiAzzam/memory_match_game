@@ -11,7 +11,6 @@ const HighestScoreUser = () => {
         setHighestScoreUser(user);
       } catch (error) {
         console.error("Error fetching highest score user:", error);
-        // Handle the error as needed
       }
     };
 
@@ -19,10 +18,10 @@ const HighestScoreUser = () => {
   }, []);
 
   return (
-    <div>
-      <h2 className="text-2xl">Highest Score User</h2>
+    <div className="flex flex-col p-3 gap-3 text-2xl border-gray-600 border">
+      <h2 className="text-blue-400">Highest Score User</h2>
       {highestScoreUser ? (
-        <div className="text-lg">
+        <div>
           <p>Username: {highestScoreUser.username}</p>
           <p>Score: {highestScoreUser.score}</p>
         </div>
