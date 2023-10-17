@@ -21,7 +21,7 @@ const TimeCounter = ({ timeLeft, totalTime }) => {
   }, [controls, percentage]);
 
   return (
-    <div className="flex flex-col gap-1 my-3 w-1/2 items-center justify-center">
+    <div className="flex flex-col gap-1 my-3 w-full md:w-1/2 items-center justify-center">
       <span>{timeLeft}</span>
       <motion.div className="border border-green-400 w-full h-6 rounded-full overflow-hidden">
         <motion.div

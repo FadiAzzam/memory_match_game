@@ -8,27 +8,27 @@ import { AppContext } from "../context/UserContext";
 const Header = () => {
   const context = useContext(AppContext);
 
+  const navItems = [
+    { id: 1, text: "Memory Game", icon: MdOutlineMemory },
+    { id: 2, text: context.store.score, icon: IoDiamond },
+    { id: 3, text: context.store.level, icon: IoShieldHalf },
+    { id: 4, text: context.store.currentUser, icon: FaUserAstronaut },
+  ];
+
   return (
     <header className="grid-area-header">
       <div className="max-w-2xl flex flex-wrap items-center justify-between mx-auto p-4 m-3 bg-white dark:bg-zinc-950  rounded-full shadow-xl dark:text-white">
-        <div className="flex items-center justify-center gap-2 self-center text-2xl font-semibold whitespace-nowrap ">
-          <MdOutlineMemory className="text-blue-400 text-2xl" />
-          <a href="/" className="text-xl">
-            Memory Game
-          </a>
-        </div>
-        <div className="flex items-center gap-2 justify-center">
-          <h5 className="text-xl">{context.store.score}</h5>
-          <IoDiamond className="text-blue-400 text-xl" />
-        </div>
-        <div className="flex items-center gap-2 justify-center ">
-          <h5 className="text-xl">{context.store.level}</h5>
-          <IoShieldHalf className="text-blue-400 text-xl" />
-        </div>
-        <div className="flex items-center gap-2 justify-center">
-          <h5 className="text-xl">{context.store.currentUser}</h5>
-          <FaUserAstronaut className="text-blue-400 text-xl" />
-        </div>
+        {navItems.map((item) => {
+          return (
+            <div
+              key={item.id}
+              className="flex items-center gap-1 justify-center"
+            >
+              <h5 className="text-base md:text-xl">{item.text}</h5>
+              <item.icon className="text-blue-400 text-base md:text-xl" />
+            </div>
+          );
+        })}
       </div>
     </header>
   );
