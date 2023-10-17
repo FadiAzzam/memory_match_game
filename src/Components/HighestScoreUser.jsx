@@ -18,7 +18,7 @@ const HighestScoreUser = () => {
   }, []);
 
   return (
-    <article className="flex flex-col p-3 gap-3 border-zinc-900 border grid-area-article">
+    <article className=" flex-col p-3 gap-3 border-zinc-900 border grid-area-article hidden md:flex">
       <h1 className="text-center py-3 text-blue-400">Highest Score User</h1>
       {highestScoreUser ? (
         <article className="border p-2 border-zinc-900 hover:bg-blue-400 hover:text-gray-900 transition-all cursor-default flex gap-2">

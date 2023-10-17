@@ -4,6 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 import Cards from "../Components/Cards";
 import Modal from "../Components/Modal";
+import Button from "../Components/Button";
 import TimeCounter from "../Components/TimeCounter";
 
 import Sidebar from "../sections/Sidebar";
@@ -19,8 +20,9 @@ const Game = () => {
   const context = useContext(AppContext);
   const navigate = useNavigate();
 
-  const [level, setLevel] = useState(context.store.level);
-  const [score, setScore] = useState(context.store.score);
+  const [startGame, setStartGame] = useState(false);
+  const [level, setLevel] = useState(1);
+  const [score, setScore] = useState(0);
   const [cards, setCards] = useState(shuffleArray(generateGameData(level)));
   const [flippedCount, setFlippedCount] = useState(0);
   const [flippedIndexes, setFlippedIndexes] = useState([]);
@@ -57,8 +59,10 @@ const Game = () => {
               : card
           )
         );
-        setScore((prevScore) => prevScore + 20);
-        context.dispatch({ type: "UPDATE_SCORE", payload: score });
+        setScore((prevScore) => {
+          context.dispatch({ type: "UPDATE_SCORE", payload: prevScore + 20 });
+          return prevScore + 20;
+        });
       } else {
         // No match
         setTimeout(() => {
@@ -89,6 +93,7 @@ const Game = () => {
     }
   };
 
+  // Timer countdown
   useEffect(() => {
     let timer;
 
@@ -97,7 +102,6 @@ const Game = () => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
     } else if (timeLeft === 0 && !allCardFound) {
-      // Handle game over logic here
       handleGameOver();
     }
 
@@ -115,19 +119,16 @@ const Game = () => {
     }
   }, [cards]);
 
-  // Reset timer when the level changes
-  useEffect(() => {
-    setTimeLeft(initialTime); // Reset the timer for each level
-  }, [context.store.level]);
-
   const goToNextLevel = () => {
-    context.dispatch({ type: "UPDATE_LEVEL", payload: level + 1 });
+    setLevel((prevLevel) => {
+      context.dispatch({ type: "UPDATE_LEVEL", payload: prevLevel + 1 });
+      return prevLevel + 1;
+    });
 
-    setLevel((prevLevel) => prevLevel + 1);
     setCards(shuffleArray(generateGameData(level + 1))); // Generate new game data for the next level
     setFlippedCount(0);
     setFlippedIndexes([]);
-    setAllCardFound(false); // Reset the flag for the next level
+    setAllCardFound(false);
   };
 
   const resetGame = () => {
@@ -160,13 +161,6 @@ const Game = () => {
         <TimeCounter timeLeft={timeLeft} totalTime={30} />
         <div className="flex-1 flex items-center justify-center flex-col">
           <Cards cards={cards} handleCardClick={handleCardClick} />
-          <button
-            className="uppercase px-1 bg-rose-600 p-3 text-black cursor-pointer hover:bg-rose-500 rounded-lg mt-6"
-            onClick={resetGame}
-          >
-            Reset Game
-          </button>
-
           <Modal
             state={gameOver}
             score={score}

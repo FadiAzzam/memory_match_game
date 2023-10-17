@@ -8,7 +8,7 @@ const Cards = ({ cards, handleCardClick }) => {
   } gap-3 items-stretch`;
 
   return (
-    <div className={classes}>
+    <div className="flex flex-wrap justify-center items-center max-w-2xl">
       {cards.map((card, index) => {
         return (
           <React.Fragment key={card.id}>

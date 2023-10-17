@@ -5,7 +5,7 @@ const Sidebar = () => {
   const { docs } = UseFireStore("results"); // Users from Firebase
 
   return (
-    <aside className="grid-area-sidebar flex flex-col p-3 gap-3 border-zinc-900 border">
+    <aside className="grid-area-sidebar hidden md:flex flex-col p-3 gap-3 border-zinc-900 border">
       <h1 className=" text-center py-3 text-blue-400">Players</h1>
       <div className="flex flex-col gap-1">
         {docs.map((user, i) => {
