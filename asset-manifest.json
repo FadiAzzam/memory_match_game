@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/memory_match_game/static/css/main.338391cc.css",
-    "main.js": "/memory_match_game/static/js/main.b45d16e3.js",
+    "main.css": "/memory_match_game/static/css/main.255f511a.css",
+    "main.js": "/memory_match_game/static/js/main.e88d1288.js",
     "index.html": "/memory_match_game/index.html",
-    "main.338391cc.css.map": "/memory_match_game/static/css/main.338391cc.css.map",
-    "main.b45d16e3.js.map": "/memory_match_game/static/js/main.b45d16e3.js.map"
+    "main.255f511a.css.map": "/memory_match_game/static/css/main.255f511a.css.map",
+    "main.e88d1288.js.map": "/memory_match_game/static/js/main.e88d1288.js.map"
   },
   "entrypoints": [
-    "static/css/main.338391cc.css",
-    "static/js/main.b45d16e3.js"
+    "static/css/main.255f511a.css",
+    "static/js/main.e88d1288.js"
   ]
 }
