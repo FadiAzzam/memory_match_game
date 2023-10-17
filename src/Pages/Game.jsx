@@ -4,6 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 import Cards from "../Components/Cards";
 import Modal from "../Components/Modal";
+import TimeCounter from "../Components/TimeCounter";
 
 import Sidebar from "../sections/Sidebar";
 import HighestScroeUser from "../Components/HighestScoreUser";
@@ -13,16 +14,19 @@ import { useNavigate } from "react-router-dom";
 
 import { generateGameData, shuffleArray } from "../utils/helpers";
 
+const initialTime = 30;
 const Game = () => {
   const context = useContext(AppContext);
   const navigate = useNavigate();
 
-  // const [data, setData] = useState(shuffleArray(generateGameData(level)));
-  // const [select, setSelect] = useState([]);
-  // const [timeLeft, setTimeLeft] = useState(0);
-  const [won, setWon] = useState(false);
-  // const [startTime, setStartTime] = useState(null);
-  // const [compareState, setCompareState] = useState([]);
+  const [level, setLevel] = useState(context.store.level);
+  const [score, setScore] = useState(context.store.score);
+  const [cards, setCards] = useState(shuffleArray(generateGameData(level)));
+  const [flippedCount, setFlippedCount] = useState(0);
+  const [flippedIndexes, setFlippedIndexes] = useState([]);
+  const [allCardFound, setAllCardFound] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(initialTime);
+  const [gameOver, setGameOver] = useState(false);
 
   // Check for user presence when the component mounts
   useEffect(() => {
@@ -31,82 +35,6 @@ const Game = () => {
       navigate("/");
     }
   }, [context.store.currentUser, navigate]);
-
-  // checking if all cards are found
-  // const areAllCardsFound = () => {
-  //   return data.every((element) => element.found);
-  // };
-
-  // useEffect(() => {
-  //   const userWon = areAllCardsFound();
-  //   setLevel((prevLevel) => prevLevel + 1);
-  //   //setWon(userWon);
-  // }, [data]);
-
-  // useEffect(() => {
-  //   if (!startTime) return;
-
-  //   if (won) {
-  //     const endTime = new Date();
-  //     const elapsedTime = Math.floor((endTime - startTime) / 1000); // Calculate time in seconds
-  //     setScore(elapsedTime);
-  //   }
-  // }, [startTime, won, level]);
-
-  // useEffect(() => {
-  //   if (!timeLeft) return;
-
-  //   const intervalId = setInterval(() => {
-  //     setTimeLeft(timeLeft - 1);
-  //   }, 1000);
-
-  //   return () => clearInterval(intervalId);
-  // }, [timeLeft]);
-
-  // useEffect(() => {
-  //   if (select.length !== 0) {
-  //     setTimeLeft(2);
-  //     if (!startTime) {
-  //       setStartTime(new Date());
-  //     }
-  //   }
-  //   setCompareState((prevState) => prevState.concat(select));
-  // }, [select]);
-
-  // useEffect(() => {
-  //   compareObjects();
-  // }, [compareState]);
-
-  // const compareObjects = () => {
-  //   if (compareState.length === 2) {
-  //     if (compareState[0].content === compareState[1].content) {
-  //       const updatedData = data.map((item) =>
-  //         item.content === compareState[1].content
-  //           ? { ...item, found: true }
-  //           : item
-  //       );
-  //       setData(updatedData);
-  //       setCompareState([]);
-  //     } else {
-  //       setCompareState([]);
-  //     }
-  //   }
-  // };
-
-  // const reset = async () => {
-  //   handleGameExit(context.store.currentUser, score);
-  //   setData(shuffleArray(generateGameData(level)));
-  //   setWon(false);
-  //   setScore(0);
-  //   setStartTime(null);
-  // };
-
-  const [level, setLevel] = useState(context.store.level);
-  const [score, setScore] = useState(context.store.score);
-  const [cards, setCards] = useState(shuffleArray(generateGameData(level)));
-  const [flippedCount, setFlippedCount] = useState(0);
-  const [flippedIndexes, setFlippedIndexes] = useState([]);
-  const [allCardFound, setAllCardFound] = useState(false);
 
   //checking if all cards are found
   const areAllCardsFound = () => {
@@ -161,13 +89,36 @@ const Game = () => {
     }
   };
 
+  useEffect(() => {
+    let timer;
+
+    if (timeLeft > 0 && !allCardFound && !gameOver) {
+      timer = setTimeout(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && !allCardFound) {
+      // Handle game over logic here
+      handleGameOver();
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [timeLeft, allCardFound]);
+
   // When all cards has been found move to next level
   useEffect(() => {
     if (areAllCardsFound()) {
       setAllCardFound(true);
       goToNextLevel();
+      setTimeLeft(initialTime);
     }
   }, [cards]);
+
+  // Reset timer when the level changes
+  useEffect(() => {
+    setTimeLeft(initialTime); // Reset the timer for each level
+  }, [context.store.level]);
 
   const goToNextLevel = () => {
     context.dispatch({ type: "UPDATE_LEVEL", payload: level + 1 });
@@ -182,22 +133,32 @@ const Game = () => {
   const resetGame = () => {
     // Reset the game state for the current level
     //handleGameExit(context.store.currentUser, score);
+
+    // Update the context with the reset score and current level
+    context.dispatch({ type: "UPDATE_SCORE", payload: 0 });
+    context.dispatch({ type: "UPDATE_LEVEL", payload: 1 });
+
     setCards(shuffleArray(generateGameData(level)));
     setFlippedCount(0);
     setFlippedIndexes([]);
     setScore(0);
     setAllCardFound(false); // Reset the flag for the current level
+  };
 
-    // Update the context with the reset score and current level
-    context.dispatch({ type: "UPDATE_SCORE", payload: 0 });
-    context.dispatch({ type: "UPDATE_LEVEL", payload: 1 });
+  // Function to handle game over
+  const handleGameOver = () => {
+    toast.error("Time's up! You didn't complete the level in time.");
+    setGameOver(true);
+    handleGameExit(context.store.currentUser, score);
+    //navigate("/");
   };
 
   return (
     <>
       <Sidebar />
-      <main className="grid-area-main flex justify-center items-center">
-        <div className="text-center">
+      <main className="grid-area-main flex justify-center items-center flex-col">
+        <TimeCounter timeLeft={timeLeft} totalTime={30} />
+        <div className="flex-1 flex items-center justify-center flex-col">
           <Cards cards={cards} handleCardClick={handleCardClick} />
           <button
             className="uppercase px-1 bg-rose-600 p-3 text-black cursor-pointer hover:bg-rose-500 rounded-lg mt-6"
@@ -206,7 +167,12 @@ const Game = () => {
             Reset Game
           </button>
 
-          <Modal won={won} score={score} reset={resetGame} />
+          <Modal
+            state={gameOver}
+            score={score}
+            reset={resetGame}
+            level={level}
+          />
           <Toaster />
         </div>
       </main>
